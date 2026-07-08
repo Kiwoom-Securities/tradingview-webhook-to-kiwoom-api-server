@@ -1,0 +1,24 @@
+{
+  "name": "tradingview-webhook-to-kiwoom-api-server",
+  "version": "1.0.0",
+  "description": "키움REST API주문을 실행해주는 트레이딩뷰 웹훅 서버 샘플 코드",
+  "homepage": "https://github.com/Kiwoom-Securities/tradingview-webhook-to-kiwoom-api-server#readme",
+  "bugs": {
+    "url": "https://github.com/Kiwoom-Securities/tradingview-webhook-to-kiwoom-api-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kiwoom-Securities/tradingview-webhook-to-kiwoom-api-server.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
