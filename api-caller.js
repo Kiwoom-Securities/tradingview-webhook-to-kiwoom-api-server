@@ -1,69 +1,20 @@
-// 상수
-const KR_ORDR_URL = '/api/dostk/ordr';  //국내주식URL
-const US_ORDR_URL = '/api/us/ordr';     //미국주식URL
+const common = require('./common.js');
 
-// 전역 변수
-var AccessToken;
-var ApiDomain;
+const KR_ORDR_URL = '/api/dostk/ordr';  //국내주식 주문URL
+const US_ORDR_URL = '/api/us/ordr';     //미국주식 주문URL
 
-/**
- * API요청 실행(공통)
- * @param {*} url 
- * @param {*} trid 
- * @param {*} data 
- * @param {*} cont_yn 
- * @param {*} next_key 
- * @returns 
- */
-const doRequst = async (endpoint, trid, data, cont_yn, next_key) => {
-    // header 데이터
-    const headers = {
-        'Content-Type': 'application/json;charset=UTF-8', // 컨텐츠 타입
-        'authorization': `Bearer ${AccessToken}`, // 접근 토큰
-        'cont-yn': cont_yn || 'N', // 연속 조회 여부
-        'next-key': next_key || '', // 연속 조회 키
-        'api-id': trid // TR명
-    };
-
-    try {
-        console.log(data);
-
-        // HTTP POST 요청
-        const response = await fetch(ApiDomain + endpoint, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(data)
-        });
-
-        // 응답 헤더
-        const responseHeaders = {
-            'next-key': response.headers.get('next-key'),
-            'cont-yn': response.headers.get('cont-yn'),
-            'api-id': response.headers.get('api-id')
-        };
-        
-        // 응답 본문
-        const responseBody = await response.json();
-
-        // 응답 결과 출력
-        // console.log('code :', response.status);
-        // console.log('header :', JSON.stringify(responseHeaders, null, 4));
-        // console.log('body :', JSON.stringify(responseBody, null, 4));
-
-        return [responseHeaders, responseBody];
-    } catch (error) {
-        console.error('요청 실패:', error);
-    }
-}
+var AccessToken; // 키움 REST API토큰
+var ApiDomain;  // 키움 REST API도메인
+var DiscordWebhookUrl;   // 매수/매도 주문 결과 알람 메시지 전송을 윈한 디스코드 웹훅URL
 
 /**
- * 서버 init: apiDomain설정과 토큰발급하여 전역 변수에 셋팅
+ * init: 키움 REST API토큰 발급하여 설정하고 .env정보 전역 변수로 설정(서버 시작 시 한번만 실행 됨)
  */
-const init = async (apiDomain, appKey, secretKey) => {
-    // API도메인 set
+const init = async (apiDomain, appKey, secretKey, discordWebhookUrl) => {
     ApiDomain = apiDomain;
+    DiscordWebhookUrl = discordWebhookUrl;
     
-    // 토큰발급
+    // 키움 REST API토큰발급
     try {
         const response = await fetch(ApiDomain + '/oauth2/token', {
             method: 'POST',
@@ -78,7 +29,7 @@ const init = async (apiDomain, appKey, secretKey) => {
         const responseBody = await response.json();
 
         if(responseBody.return_code === 0) {
-            AccessToken = responseBody.token;   // 토큰 set
+            AccessToken = responseBody.token;
         } else {
             console.log('body :', JSON.stringify(responseBody, null, 4));
             throw new Error();
@@ -89,14 +40,39 @@ const init = async (apiDomain, appKey, secretKey) => {
 }
 
 /**
+ * 키움 REST API호출(공통)
+ * @param {*} endpoint 
+ * @param {*} trid 
+ * @param {*} data 
+ * @param {*} contYn 
+ * @param {*} nextKey 
+ */
+const callApi = async (endpoint, trid, data, contYn, nextKey) => {
+    return await common.doRequest(AccessToken, ApiDomain + endpoint, trid, data, contYn, nextKey);
+}
+
+/**
+ * 디스코드 알람 전송(공통)
+ * @param {*} msg 
+ */
+const sendDiscordWebhookMsg = async (msg) => {
+    // DiscordWebhookUrl이 설정된 경우만 전송
+    if(DiscordWebhookUrl) {
+        await common.sendAlarmMsg(DiscordWebhookUrl, msg);
+    }
+}
+
+
+/**
  * 국내주식 매수 주문
  */
 const krOrdByu = (data) => {
     let trid = 'kt10000';
-    doRequst(KR_ORDR_URL, trid, data).then((res) => {
+    callApi(KR_ORDR_URL, trid, data).then((res) => {
         const resHeader = res[0];
         const resBody = res[1];
-        console.log(resBody);
+        // console.log(resBody);
+        sendDiscordWebhookMsg(JSON.stringify(resBody));
     }).catch(console.log);
 };
 
@@ -105,10 +81,11 @@ const krOrdByu = (data) => {
  */
 const krOrdSell = (data) => {
     let trid = 'kt10001';
-    doRequst(KR_ORDR_URL, trid, data).then((res) => {
+    callApi(KR_ORDR_URL, trid, data).then((res) => {
         const resHeader = res[0];
         const resBody = res[1];
-        console.log(resBody);
+        // console.log(resBody);
+        sendDiscordWebhookMsg(JSON.stringify(resBody));
     }).catch(console.log);
 };
 
@@ -117,10 +94,11 @@ const krOrdSell = (data) => {
  */
 const usOrdByu = (data) => {
     let trid = 'ust20000';
-    doRequst(US_ORDR_URL, trid, data).then((res) => {
+    callApi(US_ORDR_URL, trid, data).then((res) => {
         const resHeader = res[0];
         const resBody = res[1];
-        console.log(resBody);
+        // console.log(resBody);
+        sendDiscordWebhookMsg(JSON.stringify(resBody));
     }).catch(console.log);
 };
 
@@ -129,10 +107,11 @@ const usOrdByu = (data) => {
  */
 const usOrdSell = (data) => {
     let trid = 'ust20001';
-    doRequst(US_ORDR_URL, trid, data).then((res) => {
+    callApi(US_ORDR_URL, trid, data).then((res) => {
         const resHeader = res[0];
         const resBody = res[1];
-        console.log(resBody);
+        // console.log(resBody);
+        sendDiscordWebhookMsg(JSON.stringify(resBody));
     }).catch(console.log);
 };
 
