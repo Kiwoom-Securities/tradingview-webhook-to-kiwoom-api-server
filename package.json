@@ -17,7 +17,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "local": "nodemon index.js",
-    "start": "pm2 start index.js --name \"tka-server\""
+    "start": "pm2 start index.js --name \"tka-server\"",
+    "stop": "pm2 stop tka-server",
+    "delete": "pm2 delete tka-server"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
