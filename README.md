@@ -56,6 +56,7 @@ git clone https://github.com/Kiwoom-Securities/tradingview-webhook-to-kiwoom-api
 ```Bash
 cd tradingview-webhook-to-kiwoom-api-server
 npm install
+npm install pm2 -g
 ```
 
 ### 3. 환경 설정 (`.env` 파일)
