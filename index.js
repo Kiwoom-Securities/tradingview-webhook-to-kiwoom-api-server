@@ -164,3 +164,23 @@ app.post('/kiwoom/webhook/us/sell', (req, res) => {
 
     res.end();
 });
+
+/**
+ * 트레이딩 뷰 웹훅 - 알람 메시지 보내기
+ */
+app.post('/kiwoom/webhook/:type/msg/send', (req, res) => {
+    common.log('> 트레이딩 뷰 웹훅 - 알람 메시지 보내기');
+    
+    let type = req.params.type;
+
+    if(req.body) {
+        common.log(req.body);
+        if(type === 'discord') {
+            apiCaller.sendDiscordWebhookMsg(JSON.stringify(req.body))
+        }     
+    } else {
+        common.log('tradingview webhook body is null..');
+    }
+
+    res.end();
+});

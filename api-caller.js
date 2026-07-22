@@ -117,6 +117,7 @@ const usOrdSell = (data) => {
 
 module.exports = {
     init,
+    sendDiscordWebhookMsg,
     krOrdByu,
     krOrdSell,
     usOrdByu,

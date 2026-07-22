@@ -105,6 +105,16 @@ ngrok http 10080
 
 ---
 
+## 디스코드 알림 설정 (선택)
+
+주문 체결 결과를 디스코드로 받으려면 디스코드 채널의 웹훅 URL을 `.env` 파일의 `DISCORD_WEBHOOK_URL`에 입력합니다.
+
+1. 디스코드 채널 설정 > **연동** > **웹후크 만들기** > 새 웹후크 생성
+2. 웹후크 URL 복사
+3. `.env` 파일에 붙여넣기
+
+---
+
 ## 트레이딩뷰 웹훅 설정
 
 ### 웹훅 URL
@@ -117,6 +127,7 @@ ngrok http 10080
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/kr/sell | 국내 주식 매도 |
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/us/buy | 미국 주식 매수 |
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/us/sell | 미국 주식 매도 |
+| https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/discord/msg/send | 디스코드 메시지 전송(주문x 알람용) |
 
 ### 주문 메시지 형식
 
@@ -169,16 +180,6 @@ ngrok http 10080
 
 ---
 
-## 디스코드 알림 설정 (선택)
-
-주문 체결 결과를 디스코드로 받으려면 디스코드 채널의 웹훅 URL을 `.env` 파일의 `DISCORD_WEBHOOK_URL`에 입력합니다.
-
-1. 디스코드 채널 설정 > **연동** > **웹후크 만들기** > 새 웹후크 생성
-2. 웹후크 URL 복사
-3. `.env` 파일에 붙여넣기
-
----
-
 ## 주의사항
 
 > **실제 주문 전 반드시 모의투자를 통해 충분히 테스트하세요.**
@@ -189,4 +190,3 @@ ngrok http 10080
 ## 라이선스
 
 본 프로젝트는 참고용으로 제공됩니다. 실제 투자에 사용 시 발생하는 손익에 대한 책임은 사용자 본인에게 있습니다.
- 
