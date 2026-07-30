@@ -50,12 +50,12 @@ const doRequest = async (token, url, trid, params, contYn, nextKey) => {
 /**
  * 웹훅 알람 메시지 전송
  */
-const sendAlarmMsg = async (webhookUrl, msg) => {
+const sendAlarmMsg = async (url, params) => {
     try {
-        const response = await fetch(webhookUrl, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: msg })
+            body: JSON.stringify(params)
         });
 
         if (response.ok) {

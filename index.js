@@ -11,6 +11,9 @@ const APP_KEY = process.env.APP_KEY;
 const SECRET_KEY = process.env.SECRET_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const port = process.env.PORT;  // tradingview-webhook-to-kiwoom-api 서버 포트
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
 
 // 트레이딩뷰가 text/plain으로 보낼 때를 대비한 텍스트 파싱 미들웨어
 app.use(express.text({ type: '*/*' }));
@@ -19,7 +22,7 @@ app.use(express.text({ type: '*/*' }));
  * 웹훅 서버 start
  */
 app.listen(port, () => {
-    apiCaller.init(API_DOMAIN, APP_KEY, SECRET_KEY, DISCORD_WEBHOOK_URL).then(() => {
+    apiCaller.init(API_DOMAIN, APP_KEY, SECRET_KEY, DISCORD_WEBHOOK_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID).then(() => {
         common.log(`start! tradingview-webhook-to-kiwoom-api server on port ${port}`);
     }).catch(console.log);
 });
@@ -176,8 +179,10 @@ app.post('/kiwoom/webhook/:type/msg/send', (req, res) => {
     if(req.body) {
         common.log(req.body);
         if(type === 'discord') {
-            apiCaller.sendDiscordWebhookMsg(JSON.stringify(req.body))
-        }     
+            apiCaller.sendDiscordMsg(req.body)
+        } else if(type === 'telegram') {
+            apiCaller.sendTelegramMsg(req.body)
+        }
     } else {
         common.log('tradingview webhook body is null..');
     }

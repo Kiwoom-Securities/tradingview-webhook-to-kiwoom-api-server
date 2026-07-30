@@ -6,14 +6,18 @@ const US_ORDR_URL = '/api/us/ordr';     //미국주식 주문URL
 var AccessToken; // 키움 REST API토큰
 var ApiDomain;  // 키움 REST API도메인
 var DiscordWebhookUrl;   // 매수/매도 주문 결과 알람 메시지 전송을 윈한 디스코드 웹훅URL
+var TelegramToken;   // 텔레그램 봇 토큰
+var TelegramChatId;   // 텔레그램 CHAT_ID
 
 /**
  * init: 키움 REST API토큰 발급하여 설정하고 .env정보 전역 변수로 설정(서버 시작 시 한번만 실행 됨)
  */
-const init = async (apiDomain, appKey, secretKey, discordWebhookUrl) => {
+const init = async (apiDomain, appKey, secretKey, discordWebhookUrl, telegramToken, telegramChatId) => {
     ApiDomain = apiDomain;
     DiscordWebhookUrl = discordWebhookUrl;
-    
+    TelegramToken = telegramToken;
+    TelegramChatId = telegramChatId;
+
     // 키움 REST API토큰발급
     try {
         const response = await fetch(ApiDomain + '/oauth2/token', {
@@ -52,16 +56,34 @@ const callApi = async (endpoint, trid, data, contYn, nextKey) => {
 }
 
 /**
- * 디스코드 알람 전송(공통)
+ * 디스코드 알람 전송
  * @param {*} msg 
  */
-const sendDiscordWebhookMsg = async (msg) => {
-    // DiscordWebhookUrl이 설정된 경우만 전송
+const sendDiscordMsg = async (msg) => {
     if(DiscordWebhookUrl) {
-        await common.sendAlarmMsg(DiscordWebhookUrl, msg);
+        await common.sendAlarmMsg(DiscordWebhookUrl, { content: msg });
     }
 }
 
+/**
+ * 텔레그램 알람 전송
+ * @param {*} msg 
+ */
+const sendTelegramMsg = async (msg) => {
+    if(TelegramToken && TelegramChatId) {
+        await common.sendAlarmMsg(`https://api.telegram.org/bot${TelegramToken}/sendmessage`, { chat_id: TelegramChatId, text: msg });
+    }
+}
+
+/**
+ * 주문 결과 알람 메시지 전송
+ * @param {*} resBody 
+ */
+const sendResBodyMsg = async (resBody) => {
+    let resBodyStr = JSON.stringify(resBody);
+    sendDiscordMsg(resBodyStr);
+    sendTelegramMsg(resBodyStr);
+}
 
 /**
  * 국내주식 매수 주문
@@ -72,7 +94,7 @@ const krOrdByu = (data) => {
         const resHeader = res[0];
         const resBody = res[1];
         // console.log(resBody);
-        sendDiscordWebhookMsg(JSON.stringify(resBody));
+        sendResBodyMsg(resBody);
     }).catch(console.log);
 };
 
@@ -85,7 +107,7 @@ const krOrdSell = (data) => {
         const resHeader = res[0];
         const resBody = res[1];
         // console.log(resBody);
-        sendDiscordWebhookMsg(JSON.stringify(resBody));
+        sendResBodyMsg(resBody);
     }).catch(console.log);
 };
 
@@ -98,7 +120,7 @@ const usOrdByu = (data) => {
         const resHeader = res[0];
         const resBody = res[1];
         // console.log(resBody);
-        sendDiscordWebhookMsg(JSON.stringify(resBody));
+        sendResBodyMsg(resBody);
     }).catch(console.log);
 };
 
@@ -111,13 +133,14 @@ const usOrdSell = (data) => {
         const resHeader = res[0];
         const resBody = res[1];
         // console.log(resBody);
-        sendDiscordWebhookMsg(JSON.stringify(resBody));
+        sendResBodyMsg(resBody);
     }).catch(console.log);
 };
 
 module.exports = {
     init,
-    sendDiscordWebhookMsg,
+    sendDiscordMsg,
+    sendTelegramMsg,
     krOrdByu,
     krOrdSell,
     usOrdByu,
