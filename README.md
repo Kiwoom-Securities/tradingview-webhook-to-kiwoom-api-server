@@ -68,11 +68,15 @@ API_DOMAIN= (수정 불필요)
 API_KEY= (발급받은 App Key)
 SECRET_KEY= (발급받은 Secret Key)
 
-# 디스코드_웹훅_URL
-DISCORD_WEBHOOK_URL= (선택)
+# 디스코드 웹훅 URL (선택)
+DISCORD_WEBHOOK_URL= 
 
 # 서버 포트
 PORT=10080
+
+# 텔레그램 봇 토큰 및 CHAT_ID (선택)
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
 ```
 
 ### 4. 서버 실행
@@ -115,6 +119,22 @@ ngrok http 10080
 
 ---
 
+## 텔레그램 알림 설정 (선택)
+
+1. @BotFather → `/newbot`
+2. BOT TOKEN 발급
+3. 채팅방 생성 후 메시지 입력
+4. 아래 주소로 접속하여 CHAR_ID 확인:
+```
+https://api.telegram.org/bot<BOT_TOKEN>/getUpdates
+```
+5. .env파일에 붙여넣기
+```env
+TELEGRAM_BOT_TOKEN=<봇토큰>
+TELEGRAM_CHAT_ID=<CHAT_ID>
+```
+---
+
 ## 트레이딩뷰 웹훅 설정
 
 ### 웹훅 URL
@@ -128,6 +148,7 @@ ngrok http 10080
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/us/buy | 미국 주식 매수 |
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/us/sell | 미국 주식 매도 |
 | https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/discord/msg/send | 디스코드 메시지 전송(주문x 알람용) |
+| https://xxxx-xx-xx-xxx-xx.ngrok-free.dev/kiwoom/webhook/telegram/msg/send | 텔레그램 메시지 전송(주문x 알람용) |
 
 ### 주문 메시지 형식
 
